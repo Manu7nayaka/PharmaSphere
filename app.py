@@ -682,10 +682,21 @@ def not_found(_):
 
 
 def seed_data():
-    if not User.query.filter_by(email=os.getenv("ADMIN_EMAIL", "admin@pharmasphere.local")).first():
-        admin = User(name="PharmaSphere Admin", email=os.getenv("ADMIN_EMAIL", "admin@pharmasphere.local"), role="admin")
-        admin.set_password(os.getenv("ADMIN_PASSWORD", "ChangeMe123!"))
+    admin_email = os.getenv("ADMIN_EMAIL", "admin@pharmasphere.local").strip().lower()
+    admin_password = os.getenv("ADMIN_PASSWORD", "")
+
+    admin = User.query.filter_by(email=admin_email).first()
+
+    if not admin:
+        admin = User(
+            name="PharmaSphere Admin",
+            email=admin_email,
+            role="admin"
+        )
         db.session.add(admin)
+
+    admin.role = "admin"
+    admin.set_password(admin_password)
 
     if Product.query.count() == 0:
         sample_products = [
