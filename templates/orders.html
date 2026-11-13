@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}My orders | PharmaSphere{% endblock %}
+{% block content %}
+<section class="inner-page"><span class="kicker">YOUR PHARMASPHERE ACTIVITY</span><h1>My <em>orders.</em></h1>
+{% if orders %}<div class="table-wrap"><table><thead><tr><th>Order</th><th>Date</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody>{% for order in orders %}<tr><td><b>{{ order.order_number }}</b></td><td>{{ order.created_at.strftime('%d %b %Y') }}</td><td>₹{{ '%.2f'|format(order.total) }}</td><td><span class="status">{{ order.status }}</span></td><td><a class="table-link" href="{{ url_for('order_detail', order_id=order.id) }}">View →</a></td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty-panel"><span>✳</span><h2>No orders yet.</h2><p>Your next good pick is waiting.</p><a class="btn btn-dark" href="{{ url_for('home') }}">Start shopping</a></div>{% endif %}
+</section>
+{% endblock %}

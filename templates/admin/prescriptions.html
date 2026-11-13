@@ -1,0 +1,7 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Prescription review | PharmaSphere Admin{% endblock %}
+{% block admin_content %}
+<span class="kicker">RESTRICTED DOCUMENT WORKFLOW</span><h1>Prescription <em>review.</em></h1>
+
+<div class="table-wrap"><table><thead><tr><th>Customer</th><th>Document</th><th>Uploaded</th><th>Status</th><th>Review</th></tr></thead><tbody>{% for record in records %}<tr><td>{{ record.user.name }}<small>{{ record.user.email }}</small></td><td><a class="table-link" href="{{ url_for('view_prescription_file', record_id=record.id) }}" target="_blank" rel="noopener">View file ↗</a><small>{{ record.original_name }}</small></td><td>{{ record.uploaded_at.strftime('%d %b %Y') }}</td><td>{{ record.status }}</td><td><form method="post" action="{{ url_for('review_prescription', record_id=record.id) }}" class="review-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><select name="status"><option>Approved</option><option>Rejected</option></select><input name="admin_note" placeholder="Review note"><button class="mini-btn">Save</button></form></td></tr>{% else %}<tr><td colspan="5">No uploaded prescriptions.</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

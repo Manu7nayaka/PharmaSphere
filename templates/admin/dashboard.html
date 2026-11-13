@@ -1,0 +1,112 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Admin overview | PharmaSphere{% endblock %}
+{% block admin_content %}
+<div class="admin-welcome">
+  <div>
+    <span class="kicker">PHARMASPHERE · ADMIN CONTROL CENTRE</span>
+    <h1>Good evening,<br><em>admin.</em></h1>
+    <p class="admin-subtitle">A clear view of orders, customers and inventory activity.</p>
+  </div>
+  <div class="admin-date"><span> TODAY </span><strong>{{ now_label if now_label is defined else "BUSINESS OVERVIEW" }}</strong></div>
+</div>
+
+<div class="admin-stat-grid">
+  <article class="admin-stat-card">
+    <div class="stat-top"><span>ACTIVE PRODUCTS</span><span class="stat-icon">✳</span></div>
+    <strong>{{ stats.products }}</strong><small>Available in catalogue</small>
+  </article>
+  <article class="admin-stat-card">
+    <div class="stat-top"><span>TOTAL ORDERS</span><span class="stat-icon">↗</span></div>
+    <strong>{{ stats.orders }}</strong><small>All order statuses</small>
+  </article>
+  <article class="admin-stat-card">
+    <div class="stat-top"><span>CUSTOMERS</span><span class="stat-icon">◎</span></div>
+    <strong>{{ stats.customers }}</strong><small>Registered accounts</small>
+  </article>
+  <article class="admin-stat-card">
+    <div class="stat-top"><span>PENDING PRESCRIPTIONS</span><span class="stat-icon">＋</span></div>
+    <strong>{{ stats.pending_rx }}</strong><small>Awaiting admin review</small>
+  </article>
+  <article class="admin-stat-card admin-stat-gold">
+    <div class="stat-top"><span>ORDER VALUE</span><span class="stat-icon">₹</span></div>
+    <strong>₹{{ '%.2f'|format(stats.revenue) }}</strong><small>Excludes cancelled orders</small>
+  </article>
+</div>
+
+<div class="admin-dashboard-grid">
+  <section class="admin-panel sales-panel">
+    <div class="admin-panel-heading">
+      <div><span class="kicker">LAST 7 DAYS</span><h2>Order value</h2></div>
+      <span class="panel-chip">7-day view</span>
+    </div>
+    <div class="sales-chart" role="img" aria-label="Order value for the last seven days">
+      {% for day in weekly_sales %}
+      <div class="sales-column">
+        <div class="sales-bar-track"><div class="sales-bar" style="height: {{ day.height }}%"></div></div>
+        <strong>₹{{ "%.0f"|format(day.amount) }}</strong>
+        <small>{{ day.label }}</small>
+      </div>
+      {% endfor %}
+    </div>
+    <p class="chart-note">Values are calculated from non-cancelled orders recorded in the system.</p>
+  </section>
+
+  <section class="admin-panel inventory-panel">
+    <div class="admin-panel-heading">
+      <div><span class="kicker">STOCK HEALTH</span><h2>Inventory alerts</h2></div>
+      <a class="table-link" href="{{ url_for('admin_products') }}">Manage →</a>
+    </div>
+    <div class="inventory-summary">
+      <div><strong>{{ stats.low_stock }}</strong><span>Low stock</span></div>
+      <div><strong>{{ stats.out_of_stock }}</strong><span>Out of stock</span></div>
+    </div>
+    {% if low_stock_products %}
+      <div class="stock-alert-list">
+      {% for product in low_stock_products %}
+        <div class="stock-alert-row">
+          <span class="stock-product-icon">✳</span>
+          <div class="stock-product-name"><strong>{{ product.name }}</strong><small>{{ product.category }}</small></div>
+          <span class="stock-quantity {% if product.stock == 0 %}stock-zero{% endif %}">{{ product.stock }} left</span>
+        </div>
+      {% endfor %}
+      </div>
+    {% else %}
+      <p class="admin-empty-note">No low-stock products right now.</p>
+    {% endif %}
+  </section>
+</div>
+
+<section class="admin-panel recent-orders-panel">
+  <div class="admin-panel-heading">
+    <div><span class="kicker">CUSTOMER ACTIVITY</span><h2>Latest orders</h2></div>
+    <a class="table-link" href="{{ url_for('admin_orders') }}">View all orders →</a>
+  </div>
+  {% if latest_orders %}
+  <div class="table-wrap admin-table-wrap">
+    <table>
+      <thead><tr><th>Order reference</th><th>Customer</th><th>Date</th><th>Order total</th><th>Status</th></tr></thead>
+      <tbody>
+      {% for order in latest_orders %}
+        <tr>
+          <td><strong>{{ order.order_number }}</strong></td>
+          <td>{{ order.customer_name }}</td>
+          <td>{{ order.created_at.strftime('%d %b %Y') }}</td>
+          <td><strong>₹{{ '%.2f'|format(order.total) }}</strong></td>
+          <td><span class="order-status status-{{ order.status|lower }}">{{ order.status }}</span></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="admin-empty-state"><span>↗</span><strong>No orders yet</strong><p>New customer orders will appear here.</p></div>
+  {% endif %}
+</section>
+
+<section class="admin-quick-actions">
+  <div><span class="kicker">SHORTCUTS</span><h2>Quick actions</h2></div>
+  <a href="{{ url_for('product_form') }}"><span>＋</span><strong>Add a product</strong><small>Update your catalogue</small></a>
+  <a href="{{ url_for('admin_orders') }}"><span>↗</span><strong>Manage orders</strong><small>Review and update status</small></a>
+  <a href="{{ url_for('admin_prescriptions') }}"><span>⌕</span><strong>Review prescriptions</strong><small>Check pending submissions</small></a>
+</section>
+{% endblock %}

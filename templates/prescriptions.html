@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Prescriptions | PharmaSphere{% endblock %}
+{% block content %}
+<section class="inner-page"><span class="kicker">PRIVATE HEALTH DOCUMENTS</span><h1>Prescription <em>upload.</em></h1>
+<div class="panel form-panel upload-panel"><p>Upload a prescription document for the  review workflow. Accepted formats: PDF, JPG and PNG. Maximum size: 5 MB.</p><form method="post" enctype="multipart/form-data"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label>Choose prescription<input type="file" name="prescription" accept=".pdf,.png,.jpg,.jpeg" required></label><button class="btn btn-dark" type="submit">Upload securely →</button></form></div>
+<h2 class="subheading">Your uploads</h2>{% if records %}<div class="table-wrap"><table><thead><tr><th>File</th><th>Uploaded</th><th>Status</th><th>Review note</th></tr></thead><tbody>{% for record in records %}<tr><td>{{ record.original_name }}</td><td>{{ record.uploaded_at.strftime('%d %b %Y') }}</td><td><span class="status">{{ record.status }}</span></td><td>{{ record.admin_note or '—' }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<p class="muted">No prescription files uploaded.</p>{% endif %}
+</section>
+{% endblock %}

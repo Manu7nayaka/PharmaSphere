@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Create account' if mode == 'register' else 'Sign in' }} | PharmaSphere{% endblock %}
+{% block content %}
+<section class="auth-layout"><div class="auth-aside"><span class="kicker">WELCOME TO YOUR SPHERE</span><h1>{{ 'A healthier routine starts here.' if mode == 'register' else 'Good to see you again.' }}</h1><p>Everyday wellness essentials, thoughtful care and a smoother shopping experience.</p><span class="auth-decoration">✳</span></div>
+<div class="auth-card"><span class="kicker">{{ 'JOIN THE GOOD FEEL CLUB' if mode == 'register' else 'YOUR SPHERE IS WAITING' }}</span><h2>{{ 'Create account' if mode == 'register' else 'Sign in' }}</h2><p class="muted">{{ 'Create your customer account to manage orders and prescriptions.' if mode == 'register' else 'Sign in to access your bag, orders and account.' }}</p>
+<form method="post">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{% if mode == 'register' %}<label>Full name<input name="name" required maxlength="100" autocomplete="name" placeholder="Your name"></label>{% endif %}
+<label>Email address<input type="email" name="email" required autocomplete="email" placeholder="you@example.com"></label>
+<label>Password<input type="password" name="password" required minlength="8" autocomplete="{{ 'new-password' if mode == 'register' else 'current-password' }}" placeholder="At least 8 characters"></label>
+<button class="btn btn-dark full" type="submit">{{ 'Create my account' if mode == 'register' else 'Sign in to PharmaSphere' }} <span>→</span></button>
+</form>
+<p class="switch-auth">{% if mode == 'register' %}Already have an account? <a href="{{ url_for('login') }}">Sign in</a>{% else %}New to PharmaSphere? <a href="{{ url_for('register') }}">Create an account</a>{% endif %}</p>
+</div></section>
+{% endblock %}

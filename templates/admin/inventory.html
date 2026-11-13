@@ -1,0 +1,86 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Inventory management | PharmaSphere{% endblock %}
+{% block admin_content %}
+<div class="admin-section-head inventory-page-head">
+  <div><span class="kicker">STOCK CONTROL CENTRE</span><h1>Inventory <em>management.</em></h1>
+  <p class="admin-subtitle">Monitor quantities, record stock changes and export your inventory.</p></div>
+  <a class="btn btn-dark" href="{{ url_for('export_inventory') }}">↓ Download CSV report</a>
+</div>
+
+<div class="inventory-metrics">
+  <article><span>Total available units</span><strong>{{ summary.total_units }}</strong></article>
+  <article class="metric-warning"><span>Low-stock products</span><strong>{{ summary.low_stock }}</strong></article>
+  <article class="metric-danger"><span>Out-of-stock products</span><strong>{{ summary.out_of_stock }}</strong></article>
+</div>
+
+<section class="panel inventory-entry-panel">
+  <div class="admin-panel-heading"><div><span class="kicker">UPDATE QUANTITIES</span><h2>Record a stock movement</h2></div></div>
+  <form method="post" class="inventory-entry-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Product
+      <select name="product_id" required>
+        <option value="">Select a product</option>
+        {% for product in products %}
+        <option value="{{ product.id }}">{{ product.name }} (Current: {{ product.stock }})</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>Movement type
+      <select name="movement_type" required>
+        <option value="Stock in">Stock in — add units</option>
+        <option value="Adjustment">Adjustment — set new total</option>
+      </select>
+    </label>
+    <label>Quantity
+      <input type="number" name="quantity" min="1" step="1" required placeholder="Enter units">
+    </label>
+    <label>Note (optional)
+      <input type="text" name="note" maxlength="255" placeholder="Supplier, reason or reference">
+    </label>
+    <button class="btn btn-dark" type="submit">Save stock movement →</button>
+  </form>
+  <p class="inventory-help"><b>Stock in:</b> adds the entered quantity to current stock. <b>Adjustment:</b> sets current stock to the entered quantity.</p>
+</section>
+
+<section class="panel inventory-products-panel">
+  <div class="admin-panel-heading"><div><span class="kicker">LIVE PRODUCT QUANTITIES</span><h2>Current stock levels</h2></div><span class="panel-chip">{{ products|length }} PRODUCTS</span></div>
+  <div class="table-wrap inventory-table-wrap"><table>
+    <thead><tr><th>Product</th><th>Category</th><th>Current stock</th><th>Status</th><th>Price</th></tr></thead>
+    <tbody>
+    {% for product in products %}
+    <tr>
+      <td><strong>{{ product.emoji }} {{ product.name }}</strong></td>
+      <td>{{ product.category }}</td>
+      <td><strong>{{ product.stock }}</strong></td>
+      <td><span class="stock-badge {{ 'stock-out' if product.stock <= 0 else ('stock-low' if product.stock <= 5 else 'stock-good') }}">{{ 'Out of stock' if product.stock <= 0 else ('Low stock' if product.stock <= 5 else 'In stock') }}</span></td>
+      <td>₹{{ '%.2f'|format(product.price) }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="muted">No products available.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+</section>
+
+<section class="panel inventory-history-panel">
+  <div class="admin-panel-heading"><div><span class="kicker">AUDIT TRAIL</span><h2>Recent stock movements</h2></div><span class="panel-chip">LATEST 30</span></div>
+  <div class="table-wrap inventory-table-wrap"><table>
+    <thead><tr><th>Date & time</th><th>Product</th><th>Movement</th><th>Quantity</th><th>Before</th><th>After</th><th>Note</th></tr></thead>
+    <tbody>
+    {% for movement in movements %}
+    <tr>
+      <td>{{ movement.created_at.strftime('%d %b %Y, %I:%M %p') }}</td>
+      <td><strong>{{ movement.product_name }}</strong></td>
+      <td>{{ movement.movement_type }}</td>
+      <td>{{ movement.quantity }}</td>
+      <td>{{ movement.previous_stock }}</td>
+      <td><strong>{{ movement.new_stock }}</strong></td>
+      <td>{{ movement.note or '—' }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="7" class="muted">No stock movements recorded yet. New stock updates and sales will appear here.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+</section>
+{% endblock %}

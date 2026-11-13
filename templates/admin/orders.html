@@ -1,0 +1,6 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Orders | PharmaSphere Admin{% endblock %}
+{% block admin_content %}
+<span class="kicker">FULFILMENT WORKSPACE</span><h1>Customer <em>orders.</em></h1>
+<div class="table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Contact</th><th>Total</th><th>Status</th><th>Update</th></tr></thead><tbody>{% for order in orders %}<tr><td><a class="table-link" href="{{ url_for('order_detail', order_id=order.id) }}">{{ order.order_number }}</a><small>{{ order.created_at.strftime('%d %b %Y') }}</small></td><td>{{ order.customer_name }}</td><td>{{ order.phone }}</td><td>₹{{ '%.2f'|format(order.total) }}</td><td>{{ order.status }}</td><td><form class="inline-form" method="post" action="{{ url_for('update_order_status', order_id=order.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><select name="status">{% for status in statuses %}<option {% if order.status == status %}selected{% endif %}>{{ status }}</option>{% endfor %}</select><button class="mini-btn">Save</button></form></td></tr>{% else %}<tr><td colspan="6">No orders yet.</td></tr>{% endfor %}</tbody></table></div>
+{% endblock %}

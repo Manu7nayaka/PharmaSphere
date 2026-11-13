@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-brand"><span class="admin-brand-mark">✳</span><div><strong>PHARMASPHERE</strong><small>ADMIN WORKSPACE</small></div></div>
+    <span class="kicker">WORKSPACE</span>
+    <nav class="admin-side-nav">
+      <a class="{% if request.endpoint == 'admin_dashboard' %}active{% endif %}" href="{{ url_for('admin_dashboard') }}"><span>⌂</span>Overview</a>
+      <a class="{% if request.endpoint in ['admin_products', 'product_form'] %}active{% endif %}" <a href="{{ url_for('admin_products') }}">Products</a>
+<a href="{{ url_for('admin_inventory') }}">Inventory Management</a>
+      <a class="{% if request.endpoint in ['admin_orders', 'update_order_status'] %}active{% endif %}" href="{{ url_for('admin_orders') }}"><span>▤</span>Orders</a>
+      <a class="{% if request.endpoint in ['admin_prescriptions', 'review_prescription', 'view_prescription_file'] %}active{% endif %}" href="{{ url_for('admin_prescriptions') }}"><span>＋</span>Prescription review</a>
+    </nav>
+    <div class="admin-sidebar-bottom"><span>Storefront</span><a href="{{ url_for('home') }}">View customer site ↗</a></div>
+  </aside>
+  <section class="admin-content">{% block admin_content %}{% endblock %}</section>
+</div>
+{% endblock %}

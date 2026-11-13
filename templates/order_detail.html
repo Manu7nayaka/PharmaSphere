@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block title %}Order {{ order.order_number }} | PharmaSphere{% endblock %}
+{% block content %}
+<section class="inner-page"><span class="kicker">ORDER CONFIRMATION</span><h1>You're all <em>set.</em></h1><div class="panel order-confirm"><span class="success-mark">✓</span><h2>Order placed successfully</h2><p>Order reference: <b>{{ order.order_number }}</b></p><p>Status: <span class="status">{{ order.status }}</span></p><div class="summary-total"><span>Order total</span><b>₹{{ '%.2f'|format(order.total) }}</b></div><h3>Items</h3>{% for item in order.items %}<div class="summary-row"><span>{{ item.product_name }} × {{ item.quantity }}</span><b>₹{{ '%.2f'|format(item.unit_price * item.quantity) }}</b></div>{% endfor %}<p> payment has been processed.</p><a class="btn btn-dark" href="{{ url_for('orders') }}">View my orders</a></div></section>
+{% endblock %}

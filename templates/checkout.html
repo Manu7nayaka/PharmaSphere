@@ -1,0 +1,72 @@
+{% extends "base.html" %} {% block title %}Checkout | PharmaSphere{% endblock %}
+{% block content %}
+<section class="inner-page">
+  <span class="kicker">ALMOST THERE</span>
+  <h1>Delivery <em>details.</em></h1>
+  <div class="checkout-layout">
+    <form class="panel form-panel" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <label>
+        Full name
+        <input
+          type="text"
+          name="name"
+          required
+          value="{{ current_user.name }}"
+          maxlength="100"
+          pattern="[A-Za-z ]+"
+          title="Name should contain letters and spaces only."
+          oninput="this.value = this.value.replace(/[^A-Za-z ]/g, '')"
+          placeholder="Enter your full name"
+        />
+      </label>
+      <label>
+        Phone number
+        <input
+          type="tel"
+          name="phone"
+          required
+          minlength="10"
+          maxlength="10"
+          pattern="[0-9]{10}"
+          inputmode="numeric"
+          title="Enter exactly 10 digits."
+          oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10)"
+          placeholder="Enter 10-digit mobile number"
+        />
+      </label>
+      <label
+        >Delivery address<textarea
+          name="address"
+          required
+          rows="4"
+          placeholder="House number, street, city, PIN code"
+        ></textarea>
+      </label>
+      <label
+        >Payment method<select name="payment_method">
+          <option>Cash on Delivery </option>
+          <option>UPI </option>
+          <option>Net Banking</option>
+        </select></label
+      >
+      
+      <button class="btn btn-dark full" type="submit">
+        Place  order →
+      </button>
+    </form>
+    <aside class="panel summary">
+      <h2>Order summary</h2>
+      {% for row in items %}
+      <div class="summary-row">
+        <span>{{ row.product.name }} × {{ row.quantity }}</span
+        ><b>₹{{ '%.2f'|format(row.subtotal) }}</b>
+      </div>
+      {% endfor %}
+      <div class="summary-total">
+        <span>Total</span><b>₹{{ '%.2f'|format(total) }}</b>
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}

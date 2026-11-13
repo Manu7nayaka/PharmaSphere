@@ -1,0 +1,14 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}{{ 'Edit' if product else 'Add' }} product | PharmaSphere{% endblock %}
+{% block admin_content %}
+<span class="kicker">CATALOGUE EDITOR</span><h1>{{ 'Edit' if product else 'Add a new' }} <em>product.</em></h1>
+<form class="panel form-panel admin-form" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label>Product name<input name="name" required maxlength="150" value="{{ product.name if product else '' }}"></label>
+<label>Category<input name="category" required maxlength="80" placeholder="Wellness, Personal Care..." value="{{ product.category if product else '' }}"></label>
+<div class="two-fields"><label>Price (₹)<input type="number" name="price" min="0" step="0.01" required value="{{ product.price if product else '0.00' }}"></label><label>Stock quantity<input type="number" name="stock" min="0" step="1" required value="{{ product.stock if product else 0 }}"><small class="field-hint">Changes made here are recorded in stock movement history.</small></label></div>
+<label>Emoji / icon<input name="emoji" maxlength="12" value="{{ product.emoji if product else '✳' }}"></label>
+<label>Description<textarea name="description" rows="3">{{ product.description if product else '' }}</textarea></label>
+<label class="check-label"><input type="checkbox" name="prescription_required" value="yes" {% if product and product.prescription_required %}checked{% endif %}> Prescription review required</label>
+<label class="check-label"><input type="checkbox" name="active" value="yes" {% if not product or product.active %}checked{% endif %}> Visible in customer catalogue</label>
+<button class="btn btn-dark" type="submit">Save product →</button></form>
+{% endblock %}

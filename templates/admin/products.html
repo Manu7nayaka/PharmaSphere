@@ -1,0 +1,37 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Products | PharmaSphere Admin{% endblock %}
+{% block admin_content %}
+<div class="admin-section-head">
+  <div><span class="kicker">CATALOGUE MANAGEMENT</span><h1>Products & <em>stock.</em></h1></div>
+  <div class="inventory-page-actions">
+    <a class="btn btn-outline" href="{{ url_for('admin_inventory') }}">Inventory control</a>
+    <a class="btn btn-dark" href="{{ url_for('product_form') }}">＋ Add product</a>
+  </div>
+</div>
+<div class="table-wrap inventory-table-wrap">
+<table>
+<thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock status</th><th>Prescription</th><th>Visible</th><th>Actions</th></tr></thead>
+<tbody>
+{% for product in products %}
+<tr>
+  <td><b>{{ product.emoji }} {{ product.name }}</b></td>
+  <td>{{ product.category }}</td>
+  <td>₹{{ '%.2f'|format(product.price) }}</td>
+  <td>
+    <span class="stock-badge {{ 'stock-out' if product.stock <= 0 else ('stock-low' if product.stock <= 5 else 'stock-good') }}">
+      {{ product.stock }} units · {{ 'Out of stock' if product.stock <= 0 else ('Low stock' if product.stock <= 5 else 'In stock') }}
+    </span>
+  </td>
+  <td>{{ 'Required' if product.prescription_required else 'No' }}</td>
+  <td>{{ 'Yes' if product.active else 'Hidden' }}</td>
+  <td class="action-cell"><a href="{{ url_for('product_form', product_id=product.id) }}">Edit</a>
+    <form method="post" action="{{ url_for('delete_product', product_id=product.id) }}" onsubmit="return confirm('Hide this product from the storefront?')">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Hide</button>
+    </form>
+  </td>
+</tr>
+{% else %}
+<tr><td colspan="7" class="muted">No products have been added yet.</td></tr>
+{% endfor %}
+</tbody></table></div>
+{% endblock %}
